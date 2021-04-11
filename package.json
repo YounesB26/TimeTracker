@@ -1,0 +1,22 @@
+{
+  "name": "timetracker",
+  "version": "1.0.0",
+  "description": "Track your Time",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YounesB26/TimeTracker.git"
+  },
+  "author": "Younes_B.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/YounesB26/TimeTracker/issues"
+  },
+  "homepage": "https://github.com/YounesB26/TimeTracker#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
