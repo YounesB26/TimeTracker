@@ -39,9 +39,6 @@ window.onload = () => {
       //localStorage.setItem('Tick', sessionStorage.getItem("Tick"));
       localStorage.clear();
     };
-
-
-
   })
 };
 
