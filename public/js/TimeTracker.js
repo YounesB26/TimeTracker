@@ -1,63 +1,67 @@
 class TimeTracker {
   constructor() {
-    this.name = "TimeTracker";
+    this.name = "TimeTracker";//TODO : should be dynamic?
     this.registredNotification;
+    this.tick = 0;
+    this.defaultConfiguration = {
+      notificationInterval: 30 * 60 * 1000
+    };
   }
 
   /**
   * Init and register Notification
    */
-  _initNotification() {
+  _initNotification(callback) {
+    var that = this;
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('js/sw.js')
         .then(function (registration) {
-          this.registredNotification = registration;
+          that.registredNotification = registration;
           registration.addEventListener('updatefound', function () {
             // If updatefound is fired, it means that there's a new service worker being installed.
             var installingWorker = registration.installing;
             console.log('A new service worker is being installed:', installingWorker);
             // You can listen for changes to the installing service worker's state via installingWorker.onstatechange
           });
+          console.log("Notifications are ready!");
+
           registration.showNotification("notify");
+          callback();
         })
         .catch(function (error) {
           console.log('Service worker registration failed:', error);
         });
     } else {
       console.log('Service workers are not supported.');
+      console.warn("Notification can not be shown, make sure notifications are allowed by the browser");
     }
   }
 
-  _initTicking() {
-    console.log("Start Ticking !");
+  startEngine() {
+    var that = this;
+    console.log("Booting!");
 
-    this._initNotification();
+    this._initNotification(function () {
+      console.log("Start Ticking!");
 
-    if (!this.registredNotification) {
-      console.warn("Notification can not be shown, make sure notifications are allowed by the browser")
-    }
+      $.getJSON("data/userSetting.json", (res) => {
+        let userSettings = res;
 
+        that.tick = localStorage.getItem('Tick') || 0;
+        sessionStorage.setItem('Tick', that.tick);
 
-    $.getJSON("data/userSetting.json", (res) => {
-      let userSettings = res;
+        setInterval(() => {
+          that.tick++;
+          sessionStorage.setItem('Tick', that.tick);
+          localStorage.setItem('Tick', that.tick);
+        }, userSettings.userNotificationInterval || that.defaultConfiguration.notificationInterval);
 
-      let tick = localStorage.getItem('Tick') || 0;
-      sessionStorage.setItem('Tick', tick);
-
-      setInterval(() => {
-        tick++;
-        sessionStorage.setItem('Tick', tick);
-        localStorage.setItem('Tick', tick);
-      }, userSettings.userNotificationInterval || TT.app.defaultNotificationInterval);
-
-      window.onunload = () => {
-        localStorage.clear();
-      };
+        window.onunload = () => {
+          localStorage.clear();
+        };
+      });
     });
-  }
 
-  start() {
-    this._initTicking();
   }
 
 }
